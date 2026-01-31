@@ -241,7 +241,22 @@ class Game {
   }
 
   _updateStatus() {
-    if (this.state.flat().includes(2048)) {
+    let hasWon = false;
+
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 4; col++) {
+        if (this.state[row][col] === 2048) {
+          hasWon = true;
+          break;
+        }
+      }
+
+      if (hasWon) {
+        break;
+      }
+    }
+
+    if (hasWon) {
       this.status = 'win';
 
       return;
