@@ -74,14 +74,22 @@
         this.status = "idle";
     }
     _createEmptyState() {
-        return Array.from({
-            length: 4
-        }, ()=>Array(4).fill(0));
+        const state = [];
+        for(let i = 0; i < 4; i++)state[i] = [
+            0,
+            0,
+            0,
+            0
+        ];
+        return state;
     }
     _cloneState(state) {
-        return state.map((row)=>[
-                ...row
-            ]);
+        const cloned = [];
+        for(let i = 0; i < state.length; i++){
+            cloned[i] = [];
+            for(let j = 0; j < state[i].length; j++)cloned[i][j] = state[i][j];
+        }
+        return cloned;
     }
     _getEmptyCells(state) {
         const empty = [];
@@ -102,7 +110,8 @@
         return true;
     }
     _mergeLine(line) {
-        const nonZero = line.filter(Boolean);
+        const nonZero = [];
+        for(let i = 0; i < line.length; i++)if (line[i] !== 0) nonZero.push(line[i]);
         const result = [];
         let scoreGain = 0;
         for(let i = 0; i < nonZero.length; i++)if (nonZero[i] === nonZero[i + 1]) {
@@ -128,23 +137,26 @@
         const prevState = this._cloneState(this.state);
         let totalScoreGain = 0;
         if (direction === "left" || direction === "right") for(let row = 0; row < 4; row++){
-            const current = [
-                ...this.state[row]
-            ];
-            const line = direction === "right" ? current.reverse() : current;
-            const { line: merged, scoreGain } = this._mergeLine(line);
-            const finalLine = direction === "right" ? merged.reverse() : merged;
+            const current = [];
+            for(let i = 0; i < 4; i++)current[i] = this.state[row][i];
+            let line = current;
+            if (direction === "right") line = current.reverse();
+            const mergeResult = this._mergeLine(line);
+            let finalLine = mergeResult.line;
+            if (direction === "right") finalLine = mergeResult.line.reverse();
             this.state[row] = finalLine;
-            totalScoreGain += scoreGain;
+            totalScoreGain += mergeResult.scoreGain;
         }
         else for(let col = 0; col < 4; col++){
             const current = [];
             for(let row = 0; row < 4; row++)current.push(this.state[row][col]);
-            const line = direction === "down" ? current.reverse() : current;
-            const { line: merged, scoreGain } = this._mergeLine(line);
-            const finalLine = direction === "down" ? merged.reverse() : merged;
+            let line = current;
+            if (direction === "down") line = current.reverse();
+            const mergeResult = this._mergeLine(line);
+            let finalLine = mergeResult.line;
+            if (direction === "down") finalLine = mergeResult.line.reverse();
             for(let row = 0; row < 4; row++)this.state[row][col] = finalLine[row];
-            totalScoreGain += scoreGain;
+            totalScoreGain += mergeResult.scoreGain;
         }
         if (this._statesEqual(prevState, this.state)) {
             this._updateStatus();
