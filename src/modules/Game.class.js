@@ -261,8 +261,6 @@ class Game {
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Game;
-}
-
-if (typeof window !== 'undefined') {
+} else if (typeof window !== 'undefined') {
   window.Game = Game;
 }
