@@ -9,7 +9,6 @@ const messageStart = document.querySelector(".message-start");
 const messageWin = document.querySelector(".message-win");
 const messageLose = document.querySelector(".message-lose");
 const valueClassPrefix = "field-cell--";
-let hasMoved = false;
 function statesEqual(stateA, stateB) {
     for(let row = 0; row < 4; row++)for(let col = 0; col < 4; col++){
         if (stateA[row][col] !== stateB[row][col]) return false;
@@ -55,26 +54,19 @@ function setButtonToRestart() {
 }
 function handleMove(direction) {
     if (game.getStatus() !== "playing") return;
-    const beforeMove = game.getState();
     if (direction === "left") game.moveLeft();
     if (direction === "right") game.moveRight();
     if (direction === "up") game.moveUp();
     if (direction === "down") game.moveDown();
-    const afterMove = game.getState();
-    if (!hasMoved && !statesEqual(beforeMove, afterMove)) {
-        hasMoved = true;
-        setButtonToRestart();
-    }
     renderBoard();
     showStatusMessage();
 }
 button.addEventListener("click", function() {
     if (game.getStatus() === "idle") {
         game.start();
-        hasMoved = false;
+        setButtonToRestart();
     } else {
         game.restart();
-        hasMoved = false;
         setButtonToStart();
     }
     renderBoard();
